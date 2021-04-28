@@ -5,23 +5,23 @@ require_once('Git.php');
 use Tracy\Debugger as Debugger;
 Debugger::enable(Debugger::DEVELOPMENT);
 Debugger::$dumpTheme = 'dark';
-bdump("Tracy Active !");
 
 const REPO = 'C:\wamp64\www\basic-bootstrap-theme';
 const URL = 'http://localhost/php-version-control/';
 
 # Use in windows OS
-Git::windows_mode(); 
+Git::windows_mode();
+
+# Open local repository
 $repo = Git::open(REPO);
 
 # Git manipulation
 
 # dump($repo->run('status'));
-# $repo->checkout('theme-2');
 if(isset($_GET['branch']) && $_GET['branch'] !== '') :
 	$repo->checkout($_GET['branch']);
 endif;
-bdump('ACTIVE BRANCH : ' . $repo->active_branch());
+bdump($repo->active_branch());
 $branches = $repo->list_branches();
 ?>
 
@@ -29,29 +29,36 @@ $branches = $repo->list_branches();
 <head>
 	<title>PHP version control</title>
 	<style>
-		ul{
+		select{
 			position: absolute;
-			margin: 0px;
-			padding-top: 10px;
-			padding-left: 25px;
-			list-style: circle;
 			background: #bbbbbb;
-			width: 100px;
-			min-height: 150px;
-		}
-		a{
-			color: #000
+			min-width: 100px;
+			padding: 10px;
+			top: 5px;
+			left: 5px;
+			font-size: 15px;
+			outline: none;
 		}
 	</style>
+	<script defer>
+		function changeBranch(element) {
+			var url = element.options[element.selectedIndex].getAttribute('data-url');
+			window.location.href = url;
+		}
+	</script>
 <head>
 <body style="margin: 0px">
-	<ul>
+	<select onChange="changeBranch(this);">
 		<?php foreach ($branches as $branch): ?>
-		<li>
-			<a href="<?php echo URL ?>?branch=<?php echo $branch ?>"><?php echo $branch ?></a>
-		</li>
+			<option 
+				value="<?php echo $branch ?>" 
+				data-url="<?php echo URL ?>?branch=<?php echo $branch ?>&v=<?php echo rand(1, 99999999)?>"
+				<?php echo ($repo->active_branch() === $branch) ? "selected" : "" ?>
+			>
+				<?php echo $branch ?>
+			</option>
 		<?php endforeach; ?>
-	</ul>
-	<iframe style="width:100%; height:calc(100% - 30px); border:none;" src="http://localhost/basic-bootstrap-theme/"></iframe>
+	</select>
+	<iframe style="width:100%; height:100%; border:none;" src="http://localhost/basic-bootstrap-theme/"></iframe>
 <body>
 </html>
