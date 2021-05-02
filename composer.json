@@ -1,5 +1,6 @@
 {
     "require": {
-        "tracy/tracy": "^2.8"
+        "tracy/tracy": "^2.8",
+        "czproject/git-php": "^4.0"
     }
 }

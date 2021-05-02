@@ -1,8 +1,9 @@
 <?php
 require_once __DIR__ . '/vendor/autoload.php';
-require_once('Git.php');
 
 use Tracy\Debugger as Debugger;
+use CzProject\GitPhp\Git as Git;
+
 Debugger::enable(Debugger::DEVELOPMENT);
 Debugger::$dumpTheme = 'dark';
 
@@ -10,20 +11,15 @@ const REPO = 'C:\wamp64\www\basic-bootstrap-theme';
 const APP_URL = 'http://localhost/basic-bootstrap-theme/';
 const URL = 'http://localhost/php-version-control/';
 
-# Use in windows OS
-Git::windows_mode();
-
 # Open local repository
-$repo = Git::open(REPO);
+$git = new Git;
+$repo = $git->open(REPO);
 
-# Git manipulation
-
-# dump($repo->run('status'));
 if(isset($_GET['branch']) && $_GET['branch'] !== '') :
 	$repo->checkout($_GET['branch']);
 endif;
-bdump($repo->active_branch());
-$branches = $repo->list_branches();
+bdump($repo->getCurrentBranchName());
+$branches = $repo->getLocalBranches();
 ?>
 
 <html style="overflow-y: hidden;">
@@ -76,7 +72,7 @@ $branches = $repo->list_branches();
 				<option 
 					value="<?php echo $branch ?>" 
 					data-url="<?php echo URL ?>?branch=<?php echo $branch ?>"
-					<?php echo ($repo->active_branch() === $branch) ? "selected" : "" ?>
+					<?php echo ($repo->getCurrentBranchName() === $branch) ? "selected" : "" ?>
 				>
 					<?php echo $branch ?>
 				</option>
